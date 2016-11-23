@@ -1,42 +1,59 @@
-#!/usr/bin/env rspec
-
 require 'spec_helper'
 
 describe 'vmwaretools::ntp', :type => 'class' do
-
   describe 'without base class defined, non-vmware platform' do
-    let(:params) {{}}
-    let :facts do {
-      :virtual => 'foo',
-    }
+    on_supported_os.each do |os,facts|
+      context "on #{os}" do
+        let(:facts) do
+          facts.merge (
+            {
+              :virtual => 'foo'
+            }
+          )
+        end
+
+        it do
+          is_expected.not_to contain_exec('vmware-tools.syncTime')
+        end
+      end
     end
-    it { should_not contain_exec('vmware-tools.syncTime') }
   end
 
   describe 'without base class defined, vmware platform' do
-    let(:params) {{}}
-    let :facts do {
-      :virtual => 'vmware',
-    }
-    end
-    it 'should fail' do
-      expect {
-       should raise_error(Puppet::Error, /The class vmwaretools must be declared/)
-      }
+    on_supported_os.each do |os,facts|
+      context "on #{os}" do
+        let(:facts) do
+          facts.merge (
+            {
+              :virtual => 'vmware'
+            }
+          )
+        end
+
+        it do
+          is_expected.to compile.and_raise_error(/The class vmwaretools must be declared/)
+        end
+      end
     end
   end
 
   describe 'with base class defined, on a supported osfamily, non-vmware platform' do
     let(:pre_condition) { "class { 'vmwaretools': package => 'RandomData' }" }
-    let(:params) {{}}
-    let :facts do {
-      :osfamily                  => 'RedHat',
-      :operatingsystem           => 'RedHat',
-      :operatingsystemmajrelease => '6',
-      :virtual                   => 'foo'
-    }
+
+    on_supported_os.each do |os,facts|
+      context "on #{os}" do
+        let(:facts) do
+          facts.merge (
+            {
+              :virtual => 'foo'
+            }
+          )
+        end
+        it do
+          is_expected.not_to contain_exec('vmware-tools.syncTime')
+        end
+      end
     end
-    it { should_not contain_exec('vmware-tools.syncTime') }
   end
 
   describe 'with base class defined, on a supported osfamily, vmware platform' do
@@ -47,15 +64,23 @@ describe 'vmwaretools::ntp', :type => 'class' do
           tools_version => '3.0u5',
         }"
       end
-      let(:params) {{}}
-      let :facts do {
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => 'RedHat',
-        :operatingsystemmajrelease => '6',
-        :virtual                   => 'vmware'
-      }
+
+      on_supported_os.each do |os,facts|
+        context "on #{os}" do
+          let(:facts) do
+            facts.merge (
+              {
+                :virtual => 'vmware'
+              }
+            )
+          end
+          it do
+            is_expected.to contain_exec('vmware-tools.syncTime').with(
+              'command' => 'vmware-guestd --cmd "vmx.set_option synctime 1 0" || true'
+            )
+          end
+        end
       end
-      it { should contain_exec('vmware-tools.syncTime').with_command('vmware-guestd --cmd "vmx.set_option synctime 1 0" || true') }
     end
 
     describe "for service_pattern vmtoolsd" do
@@ -65,16 +90,24 @@ describe 'vmwaretools::ntp', :type => 'class' do
           tools_version => '4.1latest',
         }"
       end
-      let(:params) {{}}
-      let :facts do {
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => 'RedHat',
-        :operatingsystemmajrelease => '6',
-        :virtual                   => 'vmware'
-      }
+
+      on_supported_os.each do |os,facts|
+        context "on #{os}" do
+          let(:facts) do
+            facts.merge (
+              {
+                :virtual => 'vmware'
+              }
+            )
+          end
+
+          it do
+            is_expected.to contain_exec('vmware-tools.syncTime').with(
+              'command' => 'vmware-toolbox-cmd timesync disable'
+            )
+          end
+        end
       end
-      it { should contain_exec('vmware-tools.syncTime').with_command('vmware-toolbox-cmd timesync disable') }
     end
   end
-
 end

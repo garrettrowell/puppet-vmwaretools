@@ -323,12 +323,14 @@ class vmwaretools (
           }
         }
 
+        $line = $disable_tools_version ? {
+          false   => 'disable-tools-version = "false"',
+          default => 'disable-tools-version = "true"',
+        }
+
         file_line { 'disable-tools-version':
           path    => '/etc/vmware-tools/tools.conf',
-          line    => $disable_tools_version ? {
-            false   => 'disable-tools-version = "false"',
-            default => 'disable-tools-version = "true"',
-          },
+          line    => $line,
           match   => '^disable-tools-version\s*=.*$',
           require => Package[$package_real],
           notify  => Service[$service_name_real],

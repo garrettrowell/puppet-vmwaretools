@@ -1,9 +1,10 @@
-include vmwaretools
-include vmwaretools::ntp
+include ::vmwaretools
+include ::vmwaretools::ntp
+$virtual_real = $::virtual ? {
+  'vmware' => Class['vmwaretools::ntp'],
+  default  => undef,
+}
 package { 'ntpd':
   ensure => 'present',
-  notify => $::virtual ? {
-    'vmware' => Class['vmwaretools::ntp'],
-    default  => undef,
-  },
+  notify => $virtual_real,
 }

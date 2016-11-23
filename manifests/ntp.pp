@@ -40,23 +40,27 @@
 #
 class vmwaretools::ntp {
 
+  $command = getvar('::vmwaretools::service_pattern') ? {
+    'vmware-guestd' => 'vmware-guestd --cmd "vmx.set_option synctime 1 0" || true',
+    'vmtoolsd'      => 'vmware-toolbox-cmd timesync disable',
+    default         => undef,
+  }
+
   case $::virtual {
     'vmware': {
-      if $::vmwaretools::package_real == '' {
-        fail('The class vmwaretools must be declared in the catalog in order to use this class')
+      if getvar('::vmwaretools::package_real') {
+        # tools.syncTime = "FALSE" should be in the guest's vmx file and NTP
+        # should be in use on the guest.  http://kb.vmware.com/kb/1006427
+        exec { 'vmware-tools.syncTime':
+          command     => $command,
+          path        => '/usr/bin:/usr/sbin',
+          returns     => [ 0, 1, ],
+          require     => Package[$::vmwaretools::package_real],
+          refreshonly => true,
+        }
       }
-      # tools.syncTime = "FALSE" should be in the guest's vmx file and NTP
-      # should be in use on the guest.  http://kb.vmware.com/kb/1006427
-      exec { 'vmware-tools.syncTime':
-        command     => $::vmwaretools::service_pattern ? {
-          'vmware-guestd' => 'vmware-guestd --cmd "vmx.set_option synctime 1 0" || true',
-          'vmtoolsd'      => 'vmware-toolbox-cmd timesync disable',
-          default         => undef,
-        },
-        path        => '/usr/bin:/usr/sbin',
-        returns     => [ 0, 1, ],
-        require     => Package[$::vmwaretools::package_real],
-        refreshonly => true,
+      else {
+        fail('The class vmwaretools must be declared in the catalog in order to use this class')
       }
     }
     # If we are not on VMware, do not do anything.

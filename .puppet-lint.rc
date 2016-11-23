@@ -1,7 +1,14 @@
---fail-on-warnings
---relative
---no-80chars-check
+# Use this file to instruct puppet-lint to ignore certain checks.
+# For the complete list of checks and flags to disable them,
+# refer to <http://puppet-lint.com/checks/>.
+
+# Examples (uncomment before use):
+--no-140chars-check
 --no-class_inherits_from_params_class-check
+#--no-inherits_across_namespaces-check
 --no-documentation-check
---no-single_quote_string_with_variables-check
---no-selector_inside_resource-check
+--no-names_containing_dash-check
+
+# Needed due to a bug in puppet-lint not properly handling
+# hash rockets
+--no-arrow_alignment-check

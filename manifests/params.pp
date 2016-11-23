@@ -18,81 +18,81 @@
 class vmwaretools::params {
   # If we have a top scope variable defined, use it, otherwise fall back to a
   # hardcoded value.
-  $reposerver = $::vmwaretools_reposerver ? {
+  $reposerver = getvar('::vmwaretools_reposerver') ? {
     undef   => 'http://packages.vmware.com',
     default => $::vmwaretools_reposerver,
   }
 
-  $repopath = $::vmwaretools_repopath ? {
+  $repopath = getvar('::vmwaretools_repopath') ? {
     undef   => '/tools',
     default => $::vmwaretools_repopath,
   }
 
-  $repopriority = $::vmwaretools_repopriority ? {
+  $repopriority = getvar('::vmwaretools_repopriority') ? {
     undef   => '50',
     default => $::vmwaretools_repopriority,
   }
 
-  $repoprotect = $::vmwaretools_repoprotect ? {
+  $repoprotect = getvar('::vmwaretools_repoprotect') ? {
     undef   => '0',
     default => $::vmwaretools_repoprotect,
   }
 
-  $gpgkey_url = $::vmwaretools_gpgkey_url ? {
+  $gpgkey_url = getvar('::vmwaretools_gpgkey_url') ? {
     undef   => "${reposerver}${repopath}/",
     default => $::vmwaretools_gpgkey_url,
   }
 
-  $proxy = $::vmwaretools_proxy ? {
+  $proxy = getvar('::vmwaretools_proxy') ? {
     undef   => 'absent',
     default => $::vmwaretools_proxy,
   }
 
-  $proxy_username = $::vmwaretools_proxy_username ? {
+  $proxy_username = getvar('$::vmwaretools_proxy_username') ? {
     undef   => 'absent',
     default => $::vmwaretools_proxy_username,
   }
 
-  $proxy_password = $::vmwaretools_proxy_password ? {
+  $proxy_password = getvar('::vmwaretools_proxy_password') ? {
     undef   => 'absent',
     default => $::vmwaretools_proxy_password,
   }
 
-  $tools_version = $::vmwaretools_tools_version ? {
+  $tools_version = getvar('::vmwaretools_tools_version') ? {
     undef   => 'latest',
     default => $::vmwaretools_tools_version,
   }
   # Validate that tools version starts with a numeral.
   #validate_re($tools_version, '^[^3-9]\.[0-9]*')
 
-  $ensure = $::vmwaretools_ensure ? {
+  $ensure = getvar('::vmwaretools_ensure') ? {
     undef   => 'present',
     default => $::vmwaretools_ensure,
   }
 
-  $package = $::vmwaretools_package ? {
+  $package = getvar('::vmwaretools_package') ? {
     undef   => undef,
     default => $::vmwaretools_package,
   }
 
-  $service_ensure = $::vmwaretools_service_ensure ? {
+  $service_ensure = getvar('::vmwaretools_service_ensure') ? {
     undef   => 'running',
     default => $::vmwaretools_service_ensure,
   }
 
-  $service_name = $::vmwaretools_service_name ? {
+  $service_name = getvar('::vmwaretools_service_name') ? {
     undef   => undef,
     default => $::vmwaretools_service_name,
   }
 
-  $service_hasstatus = $::vmwaretools_service_hasstatus ? {
+  $service_hasstatus = getvar('$::vmwaretools_service_hasstatus') ? {
     undef   => undef,
     default => $::vmwaretools_service_hasstatus,
   }
 
   # Since the top scope variable could be a string (if from an ENC), we might
   # need to convert it to a boolean.
-  $just_prepend_repopath = $::just_prepend_repopath ? {
+  $just_prepend_repopath = getvar('::just_prepend_repopath') ? {
     undef   => false,
     default => $::vmwaretools_just_prepend_repopath,
   }
@@ -102,7 +102,7 @@ class vmwaretools::params {
     $safe_just_prepend_repopath = $just_prepend_repopath
   }
 
-  $manage_repository = $::manage_repository ? {
+  $manage_repository = getvar('::manage_repository') ? {
     undef   => true,
     default => $::vmwaretools_manage_repository,
   }
@@ -112,7 +112,7 @@ class vmwaretools::params {
     $safe_manage_repository = $manage_repository
   }
 
-  $disable_tools_version = $::vmwaretools_disable_tools_version ? {
+  $disable_tools_version = getvar('::vmwaretools_disable_tools_version') ? {
     undef   => true,
     default => $::vmwaretools_disable_tools_version,
   }
@@ -122,7 +122,7 @@ class vmwaretools::params {
     $safe_disable_tools_version = $disable_tools_version
   }
 
-  $autoupgrade = $::vmwaretools_autoupgrade ? {
+  $autoupgrade = getvar('::vmwaretools_autoupgrade') ? {
     undef   => false,
     default => $::vmwaretools_autoupgrade,
   }
@@ -132,7 +132,7 @@ class vmwaretools::params {
     $safe_autoupgrade = $autoupgrade
   }
 
-  $service_enable = $::vmwaretools_service_enable ? {
+  $service_enable = getvar('::vmwaretools_service_enable') ? {
     undef   => true,
     default => $::vmwaretools_service_enable,
   }
@@ -142,7 +142,7 @@ class vmwaretools::params {
     $safe_service_enable = $service_enable
   }
 
-  $service_hasrestart = $::vmwaretools_service_hasrestart ? {
+  $service_hasrestart = getvar('::vmwaretools_service_hasrestart') ? {
     undef   => true,
     default => $::vmwaretools_service_hasrestart,
   }
@@ -152,19 +152,19 @@ class vmwaretools::params {
     $safe_service_hasrestart = $service_hasrestart
   }
 
-  $scsi_timeout = $::vmwaretools_scsi_timeout ? {
+  $scsi_timeout = getvar('::vmwaretools_scsi_timeout') ? {
     undef   => '180',
     default => $::vmwaretools_scsi_timeout,
   }
 
-  if $::operatingsystemmajrelease { # facter 1.7+
-    $majdistrelease = $::operatingsystemmajrelease
-  } elsif $::lsbmajdistrelease {    # requires LSB to already be installed
-    $majdistrelease = $::lsbmajdistrelease
-  } elsif $::os_maj_version {       # requires stahnma/epel
-    $majdistrelease = $::os_maj_version
+  if getvar('::operatingsystemmajrelease') { # facter 1.7+
+    $majdistrelease = getvar('::operatingsystemmajrelease')
+  } elsif getvar('::lsbmajdistrelease') {    # requires LSB to already be installed
+    $majdistrelease = getvar('::lsbmajdistrelease')
+  } elsif getvar('::os_maj_version') {       # requires stahnma/epel
+    $majdistrelease = getvar('::os_maj_version')
   } else {
-    $majdistrelease = regsubst($::operatingsystemrelease,'^(\d+)\.(\d+)','\1')
+    $majdistrelease = regsubst(getvar('::operatingsystemrelease'),'^(\d+)\.(\d+)','\1')
   }
 
   case $::osfamily {
@@ -196,15 +196,15 @@ class vmwaretools::params {
           $supported = false
         }
       }
-      $repobasearch_4x = $::architecture ? {
+      $repobasearch_4x = getvar('::architecture') ? {
         'i386'  => 'i686',
         'i586'  => 'i686',
-        default => $::architecture,
+        default => getvar('::architecture'),
       }
-      $repobasearch_5x = $::architecture ? {
+      $repobasearch_5x = getvar('::architecture') ? {
         'i586'  => 'i386',
         'i686'  => 'i386',
-        default => $::architecture,
+        default => getvar('::architecture'),
       }
       $baseurl_string = 'rhel'  # must be lower case
     }
@@ -235,13 +235,13 @@ class vmwaretools::params {
           $service_name_5x = 'vmware-tools-services'
           $service_hasstatus_4x = false
           $service_hasstatus_5x = true
-          $repobasearch_4x = $::architecture ? {
+          $repobasearch_4x = getvar('::architecture') ? {
             'i386'  => 'i586',
-            default => $::architecture,
+            default => getvar('::architecture'),
           }
-          $repobasearch_5x = $::architecture ? {
+          $repobasearch_5x = getvar('::architecture') ? {
             'i386'  => 'i586',
-            default => $::architecture,
+            default => getvar('::architecture'),
           }
           $baseurl_string = 'sles'  # must be lower case
         }
@@ -274,6 +274,8 @@ class vmwaretools::params {
           $service_hasstatus_4x = false
           $service_hasstatus_5x = true
           $baseurl_string = 'ubuntu'  # must be lower case
+          $repobasearch_4x = undef
+          $repobasearch_5x = undef
         }
         default: {
           notice "Your operating system ${::operatingsystem} is unsupported and will not have the VMware Tools OSP installed."

@@ -1,31 +1,32 @@
-source ENV['GEM_SOURCE'] || "https://rubygems.org"
+source "https://rubygems.org"
 
-group :development, :unit_tests do
-  gem 'rake',                                 :require => false
-  gem 'rspec', '~> 2.0',                      :require => false
-  gem 'rspec-puppet', '>= 2.1.0',             :require => false
-  gem 'puppetlabs_spec_helper',               :require => false
-  gem 'puppet-lint', '>= 1.1.0',              :require => false
-  gem 'simplecov',                            :require => false
-  gem 'puppet_facts',                         :require => false
-  gem 'json',                                 :require => false
-  gem 'metadata-json-lint', '>= 0.0.4',       :require => false
-  gem 'puppet-lint-unquoted_string-check',    :require => false
-  gem 'puppet-lint-empty_string-check',       :require => false
-  gem 'puppet-lint-leading_zero-check',       :require => false
-  gem 'puppet-lint-variable_contains_upcase', :require => false
+group :test do
+  gem "rake"
+  gem "puppet", ENV['PUPPET_GEM_VERSION'] || '~> 4.7.0'
+  gem "rspec"
+  gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
+  gem "puppetlabs_spec_helper"
+  gem "metadata-json-lint", '0.0.11'
+  gem "rspec-puppet-facts"
+  gem 'rubocop'
+  gem "puppet-lint-absolute_classname-check"
+  gem "puppet-lint-leading_zero-check"
+  gem "puppet-lint-trailing_comma-check"
+  gem "puppet-lint-version_comparison-check"
+  gem "puppet-lint-classes_and_types_beginning_with_digits-check"
+  gem "puppet-lint-unquoted_string-check"
+  gem "safe_yaml"
 end
 
-if facterversion = ENV['FACTER_GEM_VERSION']
-  gem 'facter', facterversion, :require => false
-else
-  gem 'facter', :require => false
+group :development do
+  gem "travis"
+  gem "travis-lint"
+  gem "puppet-blacksmith"
+  gem "guard-rake"
 end
 
-if puppetversion = ENV['PUPPET_GEM_VERSION']
-  gem 'puppet', puppetversion, :require => false
-else
-  gem 'puppet', :require => false
+group :system_tests do
+  gem "beaker"
+  gem "beaker-rspec"
+  gem "beaker-puppet_install_helper"
 end
-
-# vim:ft=ruby
